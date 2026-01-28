@@ -400,16 +400,16 @@ export default function ParentPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-end justify-between">
-                  <div className="text-3xl font-bold text-amber-600">
+                  <div className="text-3xl font-bold text-sandy-brown-500">
                     {lowBalanceCount}
                   </div>
                   <div className="text-xs text-gray-500">
                     מתחת ל-{lowBalanceThreshold} ארוחות
                   </div>
                 </div>
-                <div className="mt-4 h-2 w-full rounded-full bg-amber-50 overflow-hidden">
+                <div className="mt-4 h-2 w-full rounded-full bg-sandy-brown-50 overflow-hidden">
                   <div
-                    className="h-full bg-amber-500 transition-all"
+                    className="h-full bg-sandy-brown-500 transition-all"
                     style={{
                       width: `${
                         totalChildren > 0

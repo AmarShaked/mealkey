@@ -135,6 +135,19 @@
   --color-dusty-denim-800: oklch(31.64% 0.048 247.42);
   --color-dusty-denim-900: oklch(21.24% 0.025 246.74);
   --color-dusty-denim-950: oklch(17.84% 0.021 249.06);
+  --color-sandy-brown-50: oklch(96.95% 0.020 70);
+--color-sandy-brown-100: oklch(93.93% 0.041 70.85);
+--color-sandy-brown-200: oklch(88.08% 0.082 70.04);
+--color-sandy-brown-300: oklch(82.57% 0.120 68.38);
+--color-sandy-brown-400: oklch(77.49% 0.152 64.93);
+--color-sandy-brown-500: oklch(72.95% 0.172 58.16);
+--color-sandy-brown-600: oklch(61.89% 0.145 58.73);
+--color-sandy-brown-700: oklch(50.31% 0.116 59.65);
+--color-sandy-brown-800: oklch(38.02% 0.085 61.42);
+--color-sandy-brown-900: oklch(24.64% 0.052 66.34);
+--color-sandy-brown-950: oklch(20.26% 0.041 71.85);
+
+
 
 
 }
@@ -183,6 +196,19 @@
   --color-dusty-denim-800: oklch(31.64% 0.048 247.42);
   --color-dusty-denim-900: oklch(21.24% 0.025 246.74);
   --color-dusty-denim-950: oklch(17.84% 0.021 249.06);
+  --color-sandy-brown-50: oklch(96.95% 0.020 70);
+--color-sandy-brown-100: oklch(93.93% 0.041 70.85);
+--color-sandy-brown-200: oklch(88.08% 0.082 70.04);
+--color-sandy-brown-300: oklch(82.57% 0.120 68.38);
+--color-sandy-brown-400: oklch(77.49% 0.152 64.93);
+--color-sandy-brown-500: oklch(72.95% 0.172 58.16);
+--color-sandy-brown-600: oklch(61.89% 0.145 58.73);
+--color-sandy-brown-700: oklch(50.31% 0.116 59.65);
+--color-sandy-brown-800: oklch(38.02% 0.085 61.42);
+--color-sandy-brown-900: oklch(24.64% 0.052 66.34);
+--color-sandy-brown-950: oklch(20.26% 0.041 71.85);
+
+
 
 
 }
