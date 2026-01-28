@@ -12,7 +12,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link to="/kiosk" className="transform transition-all hover:scale-105">
-            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-teal-500 transition-all bg-white">
+            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-dusty-denim-300 transition-all bg-white">
               <CardHeader>
                 <div className="mx-auto mb-4 h-20 w-20 rounded-2xl bg-teal-100 flex items-center justify-center">
                   <Baby className="h-10 w-10 text-teal-600" />
@@ -31,7 +31,7 @@ export default function HomePage() {
           </Link>
 
           <Link to="/parent" className="transform transition-all hover:scale-105">
-            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-teal-500 transition-all bg-white">
+            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-dusty-denim-300 transition-all bg-white">
               <CardHeader>
                 <div className="mx-auto mb-4 h-20 w-20 rounded-2xl bg-blue-100 flex items-center justify-center">
                   <Users className="h-10 w-10 text-blue-600" />
@@ -50,7 +50,7 @@ export default function HomePage() {
           </Link>
 
           <Link to="/admin" className="transform transition-all hover:scale-105">
-            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-teal-500 transition-all bg-white">
+            <Card className="h-full cursor-pointer hover:shadow-xl border-2 border-gray-100 hover:border-dusty-denim-300 transition-all bg-white">
               <CardHeader>
                 <div className="mx-auto mb-4 h-20 w-20 rounded-2xl bg-purple-100 flex items-center justify-center">
                   <Shield className="h-10 w-10 text-purple-600" />
