@@ -308,9 +308,11 @@ export default function ParentPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">פורטל הורים</h1>
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 text-center md:text-right">
+            פורטל הורים
+          </h1>
+          <div className="flex flex-col gap-2 w-full md:w-auto md:flex-row md:justify-end">
             <Button
               variant="default"
               onClick={() => setShowNewStudentForm((prev) => !prev)}
@@ -513,7 +515,7 @@ export default function ParentPage() {
         )}
 
         {selectedChild ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Balance Card */}
             <Card>
               <CardHeader>
@@ -522,13 +524,13 @@ export default function ParentPage() {
               </CardHeader>
               <CardContent className="flex flex-col items-center justify-center gap-4">
                 <div>
-                <div className="text-5xl font-bold text-center text-teal-600">
-                  {selectedChild.balance}
+                  <div className="text-5xl font-bold text-center text-teal-600">
+                    {selectedChild.balance}
+                  </div>
+                  <p className="text-center text-gray-600 mt-2">ארוחות נותרות</p>
                 </div>
-                <p className="text-center text-gray-600 mt-2">ארוחות נותרות</p>
-                </div>
-                         {/* Payment Dialog */}
-            <div className="col-span-2 flex items-center justify-center">
+                {/* Payment Dialog */}
+                <div className="mt-6 flex w-full justify-center md:justify-start">
               <Dialog
                 open={isPaymentDialogOpen}
                 onOpenChange={(open) => {
@@ -655,7 +657,7 @@ export default function ParentPage() {
                   )}
                 </DialogContent>
               </Dialog>
-            </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -706,7 +708,7 @@ export default function ParentPage() {
             </Card>
 
             {/* Meal History */}
-            <Card className="col-span-3">
+            <Card className="md:col-span-3">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <History className="ml-2 h-5 w-5" />
