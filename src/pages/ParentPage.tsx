@@ -133,7 +133,7 @@ export default function ParentPage() {
     }
   };
 
-  const handleAlternativePayment = async (provider: 'paybox' | 'bit') => {
+  const handleAlternativePayment = async () => {
     if (!selectedChild) return;
 
     try {
@@ -623,7 +623,7 @@ export default function ParentPage() {
                             type="button"
                             variant="outline"
                             className="w-full"
-                            onClick={() => handleAlternativePayment('paybox')}
+                            onClick={() => handleAlternativePayment()}
                           >
                             <span className="flex items-center justify-center gap-2">
                               <span>תשלום באמצעות PayBox</span>
@@ -638,7 +638,7 @@ export default function ParentPage() {
                             type="button"
                             variant="outline"
                             className="w-full"
-                            onClick={() => handleAlternativePayment('bit')}
+                            onClick={() => handleAlternativePayment()}
                           >
                             <span className="flex items-center justify-center gap-2">
                               <span>תשלום באמצעות Bit</span>
@@ -730,10 +730,13 @@ export default function ParentPage() {
                             {new Date(log.date).toLocaleDateString('he-IL')}
                           </span>
                           <span className="text-xs">
-                            {new Date(log.updated).toLocaleTimeString('he-IL', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {new Date(log.updated ?? log.date).toLocaleTimeString(
+                              'he-IL',
+                              {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }
+                            )}
                           </span>
                         </div>
                       </div>

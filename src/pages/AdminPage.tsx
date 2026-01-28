@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTodayLogs, pb, type DailyLog } from '@/lib/pocketbase';
-import { TrendingUp, DollarSign, Users, AlertTriangle } from 'lucide-react';
+import { TrendingUp, DollarSign, Users } from 'lucide-react';
 
 export default function AdminPage() {
   const [, setTodayLogs] = useState<DailyLog[]>([]);
-  const [liveFeed, setLiveFeed] = useState<Array<{ id?: string; name: string; time: string }>>([]);
+  const [liveFeed, setLiveFeed] = useState<Array<{ id: string; name: string; time: string }>>([]);
   const [stats, setStats] = useState({
     mealsServed: 0,
     revenue: 0,
@@ -37,7 +37,7 @@ export default function AdminPage() {
 
   const addToLiveFeed = (record: DailyLog) => {
     const newEntry = {
-      id: record.id,
+      id: record.id ?? `${Date.now()}`,
       name: record.expand?.student_id?.name || 'תלמיד',
       time: new Date().toLocaleTimeString('he-IL'),
     };
@@ -45,9 +45,12 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
     
     // Subscribe to real-time updates
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pb.collection('mealkey_daily_logs').subscribe('*', (e: any) => {
       if (e.action === 'create') {
         loadData();

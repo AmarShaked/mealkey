@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { CheckCircle2, XCircle, ScanFace } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { XCircle, ScanFace } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { getStudentByPin, updateStudentBalance, createDailyLog } from '@/lib/pocketbase';
 import Lottie from 'react-lottie';
@@ -267,6 +266,11 @@ export default function KioskPage() {
               <h2 className="text-5xl font-bold text-gray-800 mb-4">
                 {message}
               </h2>
+              {studentName && (
+                <p className="text-xl text-gray-600">
+                  {studentName}
+                </p>
+              )}
             </div>
           )}
 

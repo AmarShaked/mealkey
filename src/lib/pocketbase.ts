@@ -1,5 +1,4 @@
 import PocketBase from 'pocketbase';
-import { format } from 'date-fns';
 
 // Initialize PocketBase client
 export const pb = new PocketBase('https://pastacalc.fly.dev');
@@ -31,7 +30,7 @@ export interface DailyLog {
   date: string;
   status: 'eaten';
   created?: string;
-  updated: string;
+  updated?: string;
   expand?: {
     student_id: Student;
   };
