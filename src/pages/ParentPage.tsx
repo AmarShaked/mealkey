@@ -11,7 +11,7 @@ import {
   DialogTitle as UIDialogTitle,
   DialogDescription as UIDialogDescription,
 } from '@/components/ui/dialog';
-import { pb, loginParent, signupParent, isAuthenticated, getParentChildren, getStudentMealHistory, createTransaction, updateStudentAllergies, createStudentForParent, type Student, type DailyLog } from '@/lib/pocketbase';
+import { pb, loginParent, signupParent, isAuthenticated, getParentChildren, getStudentMealHistory, createTransaction, updateStudentAllergies, createStudentForParent, updateStudentPin, getStudentByPin, type Student, type DailyLog } from '@/lib/pocketbase';
 import { toast } from 'sonner';
 import { CreditCard, History, AlertCircle, LogOut } from 'lucide-react';
 import { logout } from '@/lib/pocketbase';
@@ -30,8 +30,8 @@ export default function ParentPage() {
   const [allergies, setAllergies] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
   const [newStudentName, setNewStudentName] = useState('');
-  const [newStudentPin, setNewStudentPin] = useState('');
   const [newStudentAllergies, setNewStudentAllergies] = useState('');
+  const [isRedeemingPin, setIsRedeemingPin] = useState(false);
   const [showNewStudentForm, setShowNewStudentForm] = useState(false);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -162,6 +162,16 @@ export default function ParentPage() {
     }
   };
 
+  const generateUniquePin = async (): Promise<string> => {
+    const maxAttempts = 50;
+    for (let i = 0; i < maxAttempts; i++) {
+      const pin = String(1000 + Math.floor(Math.random() * 9000));
+      const existing = await getStudentByPin(pin);
+      if (!existing) return pin;
+    }
+    return String(Date.now()).slice(-4);
+  };
+
   const handleUpdateAllergies = async () => {
     if (!selectedChild) return;
 
@@ -172,6 +182,23 @@ export default function ParentPage() {
     } catch (err) {
       console.error('Error updating allergies:', err);
       toast.error('שגיאה בעדכון הגבלות');
+    }
+  };
+
+  const handleRedeemNewPin = async () => {
+    if (!selectedChild) return;
+    setIsRedeemingPin(true);
+    try {
+      const newPin = await generateUniquePin();
+      await updateStudentPin(selectedChild.id!, newPin);
+      setSelectedChild((prev) => (prev ? { ...prev, pin: newPin } : null));
+      toast.success('קוד חדש נוצר בהצלחה! שמרו אותו במקום בטוח.');
+      await loadChildren();
+    } catch (err) {
+      console.error('Error redeeming PIN:', err);
+      toast.error('שגיאה ביצירת קוד חדש');
+    } finally {
+      setIsRedeemingPin(false);
     }
   };
 
@@ -186,17 +213,17 @@ export default function ParentPage() {
       }
 
       const parentId = parentModel.id;
+      const pin = await generateUniquePin();
 
       await createStudentForParent(
         newStudentName.trim(),
-        newStudentPin.trim(),
+        pin,
         newStudentAllergies.trim(),
         parentId
       );
 
-      toast.success('תלמיד נרשם בהצלחה!');
+      toast.success('תלמיד נרשם בהצלחה! הקוד הסודי יוצג בכרטיס הקוד.');
       setNewStudentName('');
-      setNewStudentPin('');
       setNewStudentAllergies('');
       await loadChildren();
     } catch (err) {
@@ -451,7 +478,7 @@ export default function ParentPage() {
             <CardContent>
               <form
                 onSubmit={handleCreateStudent}
-                className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+                className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
               >
                 <div>
                   <label className="block text-sm font-medium mb-2">
@@ -462,19 +489,6 @@ export default function ParentPage() {
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
                     placeholder="שם מלא"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    קוד סודי (PIN)
-                  </label>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    value={newStudentPin}
-                    onChange={(e) => setNewStudentPin(e.target.value)}
-                    placeholder="למשל: 1234"
                     required
                   />
                 </div>
@@ -678,6 +692,19 @@ export default function ParentPage() {
                   </div>
                   <p className="text-xs text-gray-500 text-center">
                     הקוד משמש את התלמיד במכשיר הקיוסק. שמרו עליו חסוי.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={handleRedeemNewPin}
+                    disabled={isRedeemingPin}
+                  >
+                    {isRedeemingPin ? 'מייצר קוד...' : 'קבל קוד חדש'}
+                  </Button>
+                  <p className="text-xs text-gray-400 text-center">
+                    אם איבדתם את הקוד, תוכלו ליצור קוד חדש כאן.
                   </p>
                 </div>
               </CardContent>

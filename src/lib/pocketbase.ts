@@ -97,6 +97,10 @@ export const updateStudentAllergies = async (studentId: string, allergies: strin
   return await pb.collection('mealkey_students').update(studentId, { allergies });
 };
 
+export const updateStudentPin = async (studentId: string, newPin: string) => {
+  return await pb.collection('mealkey_students').update(studentId, { pin: newPin });
+};
+
 // Transaction operations
 export const createTransaction = async (
   parentId: string,
