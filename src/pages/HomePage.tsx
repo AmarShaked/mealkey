@@ -6,9 +6,8 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="max-w-5xl w-full">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <img src="/logo.png" alt="MealKey" className="h-64 mx-auto" />
-          <p className="text-lg text-gray-600">מערכת ניהול חדר אוכל חכמה</p>
         </div> 
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
