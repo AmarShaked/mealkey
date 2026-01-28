@@ -1,0 +1,15 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="200" fill="white"/>
+ 
+  <g transform="translate(150, 40)">
+    <path d="M50 0 C77.6 0 100 22.4 100 50 C100 77.6 77.6 100 50 100 C22.4 100 0 77.6 0 50 C0 22.4 22.4 0 50 0 Z" fill="#4A90E2" opacity="0.2"/>
+   
+    <path d="M30 10 L30 40 M40 10 L40 40 M50 10 L50 40 M30 40 L50 40 L40 80" stroke="#4A90E2" stroke-width="6" fill="none" stroke-linecap="round"/>
+   
+    <path d="M60 30 C75 30 85 45 85 60 C85 75 75 90 60 90 L60 140 L75 140 L75 150 L60 150 L60 160 L75 160 L75 170 L60 170 L60 180" stroke="#F5A623" stroke-width="8" fill="none" stroke-linecap="round"/>
+  </g>
+ 
+  <text x="200" y="160" font-family="Arial, sans-serif" font-weight="bold" font-size="42" text-anchor="middle">
+    <tspan fill="#4A90E2">Meal</tspan><tspan fill="#F5A623">-key</tspan>
+  </text>
+</svg>

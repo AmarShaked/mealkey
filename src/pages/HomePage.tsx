@@ -4,12 +4,12 @@ import { Users, Baby, Shield } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="max-w-5xl w-full">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-800 mb-3">MealKey 🍽️</h1>
+          <img src="/logo.png" alt="MealKey" className="h-64 mx-auto" />
           <p className="text-lg text-gray-600">מערכת ניהול חדר אוכל חכמה</p>
-        </div>
+        </div> 
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link to="/kiosk" className="transform transition-all hover:scale-105">
@@ -72,7 +72,7 @@ export default function HomePage() {
 
         <div className="mt-12 text-center text-gray-500 text-sm space-y-1">
           <p>מערכת חכמה לניהול חדר אוכל בית ספרי</p>
-          <p>Built with React, Vite, Tailwind & PocketBase</p>
+          <p>קרן סילברמן, עמית גבין, טליה מושייב</p>
         </div>
       </div>
     </div>
