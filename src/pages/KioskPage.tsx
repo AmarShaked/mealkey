@@ -266,11 +266,6 @@ export default function KioskPage() {
               <h2 className="text-5xl font-bold text-gray-800 mb-4">
                 {message}
               </h2>
-              {studentName && (
-                <p className="text-xl text-gray-600">
-                  {studentName}
-                </p>
-              )}
             </div>
           )}
 
