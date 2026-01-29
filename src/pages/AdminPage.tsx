@@ -1,7 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getTodayLogs, getMealsPurchasedThisMonth, pb, type DailyLog } from '@/lib/pocketbase';
-import { TrendingUp, Users, Sparkles } from 'lucide-react';
+import { getTodayLogs, getMealsPurchasedThisMonth, getAllStudents, pb, type DailyLog } from '@/lib/pocketbase';
+import { TrendingUp, Users, Sparkles, Egg, Milk, Candy, Leaf, Bean, Wheat, CircleDot, Nut, AlertCircle } from 'lucide-react';
+
+const ALLERGY_PRESETS: { value: string; label: string; Icon: React.ComponentType<React.SVGAttributes<SVGSVGElement>> }[] = [
+  { value: 'ביצים', label: 'ביצים', Icon: Egg },
+  { value: 'חלב', label: 'חלב', Icon: Milk },
+  { value: 'סוכר', label: 'סוכר', Icon: Candy },
+  { value: 'תירס', label: 'תירס', Icon: Leaf },
+  { value: 'סויה', label: 'סויה', Icon: Bean },
+  { value: 'גלוטן', label: 'גלוטן', Icon: Wheat },
+  { value: 'בוטנים', label: 'בוטנים', Icon: CircleDot },
+  { value: 'אגוזים', label: 'אגוזים', Icon: Nut },
+];
+
+function parseAllergies(str: string): string[] {
+  return str
+    .split(/[,،\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
 import {
   ResponsiveContainer,
   Area,
@@ -16,6 +34,7 @@ export default function AdminPage() {
     mealsPurchasedThisMonth: 0,
     predictedLoad: 0,
   });
+  const [allergyCounts, setAllergyCounts] = useState<Record<string, number>>({});
   // Mock: weekly meals purchased this month + previous month total for comparison
   const mealsChartData = [
     { label: 'שבוע 1', meals: 52, month: 'החודש' },
@@ -42,9 +61,10 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const [logs, mealsPurchasedThisMonth] = await Promise.all([
+      const [logs, mealsPurchasedThisMonth, studentsResult] = await Promise.all([
         getTodayLogs(),
         getMealsPurchasedThisMonth(),
+        getAllStudents(),
       ]);
       setTodayLogs(logs.items);
 
@@ -53,6 +73,15 @@ export default function AdminPage() {
         mealsPurchasedThisMonth,
         predictedLoad: Math.min(95, 70 + logs.items.length / 2),
       });
+
+      const counts: Record<string, number> = {};
+      for (const student of studentsResult.items) {
+        const allergies = parseAllergies(student.allergies || '');
+        for (const a of allergies) {
+          counts[a] = (counts[a] ?? 0) + 1;
+        }
+      }
+      setAllergyCounts(counts);
     } catch (err) {
       console.error('Error loading admin data:', err);
     }
@@ -195,8 +224,39 @@ export default function AdminPage() {
             </CardContent>
           </Card>
 
-
-
+          {/* Allergy counts */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <AlertCircle className="ml-2 h-5 w-5" />
+                אלרגיות - מספר תלמידים
+              </CardTitle>
+              <CardDescription>כמה תלמידים רשומים עם כל אלרגיה</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {ALLERGY_PRESETS
+                .filter(({ value }) => !!allergyCounts[value])
+                .map(({ value, label, Icon }) => {
+                  const count = allergyCounts[value] ?? 0;
+                  return (
+                    <div
+                      key={value}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100"
+                    >
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center  text-sandy-brown-600">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-800 truncate">{label}</p>
+                        <p className="text-sm text-muted-foreground">{count}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Live Feed */}
           <Card className="row-span-2">

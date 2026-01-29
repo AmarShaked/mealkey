@@ -13,9 +13,34 @@ import {
 } from '@/components/ui/dialog';
 import { pb, loginParent, signupParent, isAuthenticated, getParentChildren, getStudentMealHistory, createTransaction, updateStudentAllergies, createStudentForParent, updateStudentPin, getStudentByPin, type Student, type DailyLog } from '@/lib/pocketbase';
 import { toast } from 'sonner';
-import { CreditCard, History, AlertCircle, LogOut } from 'lucide-react';
+import { CreditCard, History, AlertCircle, LogOut, Egg, Milk, Candy, Wheat, Bean, Nut, Leaf, CircleDot } from 'lucide-react';
 import { logout } from '@/lib/pocketbase';
 import successAnimation from '@/assets/Success.json';
+
+const ALLERGY_PRESETS: { value: string; label: string; Icon: React.ComponentType<React.SVGAttributes<SVGSVGElement>> }[] = [
+  { value: 'ביצים', label: 'ביצים', Icon: Egg },
+  { value: 'חלב', label: 'חלב', Icon: Milk },
+  { value: 'סוכר', label: 'סוכר', Icon: Candy },
+  { value: 'תירס', label: 'תירס', Icon: Leaf },
+  { value: 'סויה', label: 'סויה', Icon: Bean },
+  { value: 'גלוטן', label: 'גלוטן', Icon: Wheat },
+  { value: 'בוטנים', label: 'בוטנים', Icon: CircleDot },
+  { value: 'אגוזים', label: 'אגוזים', Icon: Nut },
+];
+
+function parseAllergies(str: string): string[] {
+  return str
+    .split(/[,،\s]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function toggleAllergy(current: string, value: string): string {
+  const list = parseAllergies(current);
+  const has = list.some((s) => s === value);
+  const next = has ? list.filter((s) => s !== value) : [...list, value];
+  return next.join(', ');
+}
 
 export default function ParentPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -225,6 +250,7 @@ export default function ParentPage() {
       toast.success('תלמיד נרשם בהצלחה! הקוד הסודי יוצג בכרטיס הקוד.');
       setNewStudentName('');
       setNewStudentAllergies('');
+      setShowNewStudentForm(false);
       await loadChildren();
     } catch (err) {
       console.error('Error creating student:', err);
@@ -342,9 +368,9 @@ export default function ParentPage() {
           <div className="flex flex-col gap-2 w-full md:w-auto md:flex-row md:justify-end">
             <Button
               variant="default"
-              onClick={() => setShowNewStudentForm((prev) => !prev)}
+              onClick={() => setShowNewStudentForm(true)}
             >
-              {showNewStudentForm ? 'בטל הוספת תלמיד' : 'הוסף תלמיד חדש'}
+              הוסף תלמיד חדש
             </Button>
             <Button onClick={handleLogout} variant="outline">
               <LogOut className="ml-2 h-4 w-4" />
@@ -469,49 +495,70 @@ export default function ParentPage() {
           </div>
         )}
 
-        {showNewStudentForm && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>רישום תלמיד חדש</CardTitle>
-              <CardDescription>הוסף ילד חדש לחשבון ההורה</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form
-                onSubmit={handleCreateStudent}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
-              >
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    שם התלמיד
-                  </label>
-                  <Input
-                    type="text"
-                    value={newStudentName}
-                    onChange={(e) => setNewStudentName(e.target.value)}
-                    placeholder="שם מלא"
-                    required
-                  />
+        <Dialog open={showNewStudentForm} onOpenChange={setShowNewStudentForm}>
+          <DialogContent className="sm:max-w-lg">
+            <UIDialogHeader>
+              <UIDialogTitle>רישום תלמיד חדש</UIDialogTitle>
+              <UIDialogDescription>הוסף ילד חדש לחשבון ההורה</UIDialogDescription>
+            </UIDialogHeader>
+            <form
+              onSubmit={handleCreateStudent}
+              className="grid grid-cols-1 gap-4 items-start mt-4"
+            >
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  שם התלמיד
+                </label>
+                <Input
+                  type="text"
+                  value={newStudentName}
+                  onChange={(e) => setNewStudentName(e.target.value)}
+                  placeholder="שם מלא"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  אלרגיות (אופציונלי)
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {ALLERGY_PRESETS.map(({ value, label, Icon }) => {
+                    const selected = parseAllergies(newStudentAllergies).includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setNewStudentAllergies((prev) => toggleAllergy(prev, value))}
+                        className={`
+                          flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 p-2.5
+                          transition-all active:scale-[0.98]
+                          ${selected
+                            ? 'border-teal-500 bg-teal-50 text-teal-700'
+                            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'}
+                        `}
+                      >
+                        <Icon className="size-6 sm:size-7 shrink-0" strokeWidth={1.5} aria-hidden />
+                        <span className="text-xs font-medium leading-tight">{label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    אלרגיות (אופציונלי)
-                  </label>
-                  <Input
-                    type="text"
-                    value={newStudentAllergies}
-                    onChange={(e) => setNewStudentAllergies(e.target.value)}
-                    placeholder="למשל: גלוטן, בוטנים"
-                  />
-                </div>
-                <div>
-                  <Button type="submit" className="w-full mt-6">
-                    הוסף תלמיד
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        )}
+              </div>
+              <div className="flex gap-2 justify-end pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewStudentForm(false)}
+                >
+                  ביטול
+                </Button>
+                <Button type="submit">
+                  הוסף תלמיד
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Child Selector */}
         {children.length > 0 && (
@@ -722,11 +769,28 @@ export default function ParentPage() {
               <CardContent className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">אלרגיות והגבלות</label>
-                  <Input
-                    value={allergies}
-                    onChange={(e) => setAllergies(e.target.value)}
-                    placeholder="למשל: גלוטן, בוטנים, חלב"
-                  />
+                  <div className="grid grid-cols-4 gap-2">
+                    {ALLERGY_PRESETS.map(({ value, label, Icon }) => {
+                      const selected = parseAllergies(allergies).includes(value);
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setAllergies((prev) => toggleAllergy(prev, value))}
+                          className={`
+                            flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 p-2.5
+                            transition-all active:scale-[0.98]
+                            ${selected
+                              ? 'border-teal-500 bg-teal-50 text-teal-700'
+                              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'}
+                          `}
+                        >
+                          <Icon className="size-6 sm:size-7 shrink-0" strokeWidth={1.5} aria-hidden />
+                          <span className="text-xs font-medium leading-tight">{label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <Button onClick={handleUpdateAllergies} className="w-full">
                   עדכן הגבלות
@@ -778,7 +842,7 @@ export default function ParentPage() {
             </Card>
           </div>
         ) : (
-        showNewStudentForm ? null :<Card>
+          <Card>
             <CardContent className="p-12 text-center space-y-4">
               <p className="text-gray-600">
                 לא נמצאו ילדים רשומים בחשבון זה.
@@ -790,7 +854,7 @@ export default function ParentPage() {
                 הוסף תלמיד ראשון
               </Button>
             </CardContent>
-          </Card>     
+          </Card>
         )}
       </div>
     </div>

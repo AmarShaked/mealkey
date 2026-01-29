@@ -166,3 +166,8 @@ export const getParentChildren = async (parentId: string) => {
     filter: `parent_id = "${parentId}"`,
   });
 };
+
+/** Get all students (for admin dashboard). */
+export const getAllStudents = async () => {
+  return await pb.collection('mealkey_students').getList<Student>(1, 500);
+};
