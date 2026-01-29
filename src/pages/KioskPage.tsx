@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { XCircle, ScanFace } from 'lucide-react';
+import { XCircle, ScanFace, Delete } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { getStudentByPin, updateStudentBalance, createDailyLog } from '@/lib/pocketbase';
 import Lottie from 'react-lottie';
@@ -9,7 +9,6 @@ export default function KioskPage() {
   const [pin, setPin] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'scanning'>('idle');
   const [message, setMessage] = useState('');
-  const [studentName, setStudentName] = useState('');
   const [visibleDigits, setVisibleDigits] = useState<boolean[]>([false, false, false, false]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -56,7 +55,6 @@ export default function KioskPage() {
     setPin('');
     setStatus('idle');
     setMessage('');
-    setStudentName('');
     setVisibleDigits([false, false, false, false]);
   };
 
@@ -92,7 +90,6 @@ export default function KioskPage() {
       await createDailyLog(student.id!);
 
       setStatus('success');
-      setStudentName(student.name);
       setMessage(`בתיאבון ${student.name}!`);
       
       setTimeout(handleClear, 3000);
@@ -131,7 +128,6 @@ export default function KioskPage() {
         
         // Mock successful recognition - using first student for demo
         setStatus('success');
-        setStudentName('עמית');
         setMessage('בתיאבון עמית!');
         
         setTimeout(handleClear, 3000);
@@ -155,12 +151,12 @@ export default function KioskPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl shadow-xl border-0 bg-white">
-        <CardContent className="p-8">
+    <div className="h-screen bg-gray-50 flex items-center justify-center">
+      <Card className="w-full items-center justify-center flex flex-col h-[90%] max-w-2xl shadow-xl border-0 bg-white">
+        <CardContent className="p-8 h-full flex flex-col w-full">
           {status === 'idle' ? <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-2">
-             ברוכות הבאות 🍽️
+             ברוכות הבאות
             </h1>
             <p className="text-gray-500">הזיני קוד אישי להמשך</p>
           </div> : null}
@@ -168,11 +164,11 @@ export default function KioskPage() {
           {status === 'idle' && (
             <>
               {/* PIN Display - 4 Squares */}
-              <div className="flex justify-center gap-4 mb-8">
+              <div className="flex justify-around gap-4 mb-8">
                 {[0, 1, 2, 3].reverse().map((index) => (
                   <div
                     key={index}
-                    className="size-32 rounded-xl border-2 border-gray-300 bg-white flex items-center justify-center text-5xl font-bold text-gray-800 shadow-sm"
+                    className="w-full h-24 border-b-2 border-gray-300 bg-white flex items-center justify-center text-5xl font-bold text-gray-800"
                   >
                     {pin[index] ? (visibleDigits[index] ? pin[index] : '•') : ''}
                   </div>
@@ -180,33 +176,33 @@ export default function KioskPage() {
               </div>
 
               {/* Number Pad */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-3 gap-3 mb-6 h-full">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                   <button
                     key={num}
                     onClick={() => handlePinInput(num.toString())}
-                    className="text-5xl font-semibold py-8 px-8 rounded-xl bg-white border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 transition-all active:scale-95"
+                    className="text-5xl font-semibold w-full h-full rounded-xl bg-white border-2 border-gray-200 hover:border-dusty-denim-400 hover:bg-dusty-denim-50 transition-all active:scale-95"
                   >
                     {num}
                   </button>
                 ))}
                 <button
                   onClick={handleClear}
-                  className="text-5xl font-semibold py-5 px-8 rounded-xl bg-white border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 text-red-600 transition-all active:scale-95"
+                  className="text-5xl font-semibold w-full h-full flex items-center justify-center rounded-xl bg-white border-2 border-gray-200 hover:border-sandy-brown-400 hover:bg-sandy-brown-50 text-sandy-brown-500 transition-all active:scale-95"
                 >
-                  נקה
+                  <Delete className="size-12" />
                 </button>
                 <button
                   onClick={() => handlePinInput('0')}
-                  className="text-5xl font-semibold py-8 px-8 rounded-xl bg-white border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 transition-all active:scale-95"
+                  className="text-5xl font-semibold rounded-xl bg-white border-2 border-gray-200 hover:border-dusty-denim-400 hover:bg-dusty-denim-50 transition-all active:scale-95"
                 >
                   0
                 </button>
                 <button
                   onClick={handleFaceID}
-                  className="text-5xl flex items-center justify-center font-semibold py-5 px-8 rounded-xl bg-teal-600 text-white hover:bg-teal-700 transition-all active:scale-95 shadow-md"
+                  className="text-5xl flex items-center w-full h-full justify-center font-semibold  rounded-xl bg-dusty-denim-500 text-white hover:bg-dusty-denim-600 transition-all active:scale-95 shadow-md"
                 >
-                  <ScanFace className="size-16" />
+                  <ScanFace className="size-12" />
                 </button>
               </div>
             </>
@@ -254,24 +250,27 @@ export default function KioskPage() {
 
           {/* Success State */}
           {status === 'success' && (
-            <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
+            <div className="text-center py-12 animate-in fade-in zoom-in duration-500 flex flex-col items-center justify-center gap-4">
               <div>
                 <Lottie
                   options={burgerOptions}
-                  height={200}
-                  width={200}
+                  height={350}
+                  width={350}
                   isClickToPauseDisabled
                 />
               </div>
-              <h2 className="text-5xl font-bold text-gray-800 mb-4">
+              <h2 className="text-6xl font-bold text-gray-800 mb-4">
                 {message}
               </h2>
+              <p className="text-xl text-gray-600">
+                  אל תשכחי לקחת את הפיתקית 
+                </p>
             </div>
           )}
 
           {/* Error State */}
           {status === 'error' && (
-            <div className="text-center py-12 animate-in fade-in zoom-in duration-500">
+            <div className="flex flex-col items-center justify-center text-center py-12 animate-in fade-in zoom-in duration-500">
               <div className="mx-auto mb-6 h-24 w-24 rounded-full bg-red-100 flex items-center justify-center">
                 <XCircle className="h-16 w-16 text-red-600" />
               </div>
