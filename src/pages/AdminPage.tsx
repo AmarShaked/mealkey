@@ -1,16 +1,37 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getTodayLogs, pb, type DailyLog } from '@/lib/pocketbase';
-import { TrendingUp, DollarSign, Users } from 'lucide-react';
+import { getTodayLogs, getMealsPurchasedThisMonth, pb, type DailyLog } from '@/lib/pocketbase';
+import { TrendingUp, Users, Sparkles } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from 'recharts';
 
 export default function AdminPage() {
   const [, setTodayLogs] = useState<DailyLog[]>([]);
   const [liveFeed, setLiveFeed] = useState<Array<{ id: string; name: string; time: string }>>([]);
   const [stats, setStats] = useState({
     mealsServed: 0,
-    revenue: 0,
+    mealsPurchasedThisMonth: 0,
     predictedLoad: 0,
   });
+  // Mock: weekly meals purchased this month + previous month total for comparison
+  const mealsChartData = [
+    { label: 'שבוע 1', meals: 52, month: 'החודש' },
+    { label: 'שבוע 2', meals: 23, month: 'החודש' },
+    { label: 'שבוע 3', meals: 61, month: 'החודש' },
+    { label: 'שבוע 4', meals: 79, month: 'החודש' },
+    { label: 'שבוע 5', meals: 25, month: 'החודש' },
+    { label: 'שבוע 6', meals: 90, month: 'החודש' },
+    { label: 'שבוע 7', meals: 80, month: 'החודש' },
+    { label: 'שבוע 8', meals: 100, month: 'החודש' },
+    { label: 'שבוע 9', meals: 200, month: 'החודש' },
+    { label: 'שבוע 10', meals: 110, month: 'החודש' },
+    { label: 'שבוע 11', meals: 115, month: 'החודש' },
+    { label: 'שבוע 12', meals: 120, month: 'החודש' },
+  ];
+
   const weekdayHeatmap = [
     { key: 'sun', label: 'ראשון', value: 85 },
     { key: 'mon', label: 'שני', value: 92 },
@@ -21,13 +42,15 @@ export default function AdminPage() {
 
   const loadData = async () => {
     try {
-      const logs = await getTodayLogs();
+      const [logs, mealsPurchasedThisMonth] = await Promise.all([
+        getTodayLogs(),
+        getMealsPurchasedThisMonth(),
+      ]);
       setTodayLogs(logs.items);
-      
-      // Calculate stats
+
       setStats({
         mealsServed: logs.items.length,
-        revenue: logs.items.length * 25, // 25 ILS per meal
+        mealsPurchasedThisMonth,
         predictedLoad: Math.min(95, 70 + logs.items.length / 2),
       });
     } catch (err) {
@@ -78,19 +101,43 @@ export default function AdminPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-blue-600">{stats.mealsServed}</div>
+              <div className="text-4xl font-bold text-dusty-denim-500">{stats.mealsServed}</div>
               <p className="text-xs text-muted-foreground mt-2">ארוחות סה״כ</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='pb-0'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">הכנסות היום</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">ארוחות שנרכשו החודש</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-green-600">₪{stats.revenue}</div>
-              <p className="text-xs text-muted-foreground mt-2">סכום כולל</p>
+            <CardContent className="flex flex-col gap-4 p-0 h-full w-full">
+              <div className="pr-6">
+              <div className="text-4xl font-bold text-dusty-denim-500">{stats.mealsPurchasedThisMonth}</div>
+              <p className="text-xs text-muted-foreground mt-2">ארוחות סה״כ</p>
+              </div>
+              <div className="w-full self-center">
+              <div className="h-[50px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                    data={mealsChartData}
+                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                  >
+
+          
+                    <Area
+                      type="monotone"
+                      dataKey="meals"
+                      stroke="oklch(59.27% 0.099 246.94)"
+                      fill="oklch(83.78% 0.039 245.83)"
+                      strokeWidth={2}
+                      dot={{ fill: 'white', r: 3 }}
+                      activeDot={{ r: 4 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+         
+              </div>
             </CardContent>
           </Card>
 
@@ -128,10 +175,10 @@ export default function AdminPage() {
                       <div
                         className={`w-full rounded-full transition-all ${
                           day.value > 80
-                            ? 'bg-red-500'
+                            ? 'bg-red-300'
                             : day.value > 60
-                            ? 'bg-orange-500'
-                            : 'bg-green-500'
+                            ? 'bg-orange-300'
+                            : 'bg-green-300'
                         }`}
                         style={{ height: `${day.value}%` }}
                       />
@@ -192,9 +239,14 @@ export default function AdminPage() {
                     {/* AI Insights */}
                     <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="ml-2 h-5 w-5" />
-                תובנות AI - עומס צפוי
+              <CardTitle className="flex items-center gap-2">
+                
+                עומס צפוי
+
+                <div className="bg-sandy-brown-50 rounded-lg p-2 flex items-center px-2 py-0.5 gap-2 text-sandy-brown-500 text-base">
+                  AI
+                  <Sparkles className="size-4 text-sandy-brown-500" />
+                </div>
               </CardTitle>
               <CardDescription>חיזוי עומס לפי שעה</CardDescription>
             </CardHeader>
@@ -213,7 +265,7 @@ export default function AdminPage() {
                     <div className="flex-1 bg-gray-200 rounded-full h-6 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          item.load > 80 ? 'bg-red-500' : item.load > 60 ? 'bg-orange-500' : 'bg-green-500'
+                          item.load > 80 ? 'bg-red-300' : item.load > 60 ? 'bg-orange-300' : 'bg-green-300'
                         }`}
                         style={{ width: `${item.load}%` }}
                       />

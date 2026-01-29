@@ -123,6 +123,17 @@ export const createTransaction = async (
   return transaction;
 };
 
+/** Sum of meals (amount) purchased in the current month. */
+export const getMealsPurchasedThisMonth = async (): Promise<number> => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString();
+  const records = await pb.collection('mealkey_transactions').getList<Transaction>(1, 500, {
+    filter: `date >= "${start}" && date <= "${end}"`,
+  });
+  return records.items.reduce((sum, t) => sum + (t.amount ?? 0), 0);
+};
+
 // Daily log operations
 export const createDailyLog = async (studentId: string) => {
   const data: DailyLog = {
